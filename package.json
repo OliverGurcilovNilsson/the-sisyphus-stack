@@ -1,0 +1,27 @@
+{
+  "name": "the-sisyphus-stack",
+  "version": "1.0.0",
+  "description": "An automated job application platform built to break the curse of Sisyphus.",
+  "main": "index.js",
+  "scripts": {
+    "install:all": "npm install --prefix frontend && pip install -r backend/requirements.txt",
+    "start:backend": "cd backend && source .venv/bin/activate && uvicorn main:app --reload",
+    "start:frontend": "npm run dev --prefix frontend",
+    "dev": "concurrently --kill-others \"npm run start:backend\" \"npm run start:frontend\"",
+    "test": "echo \"Error: No tests defined yet for Sisyphus Stack\" && exit 0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OliverGurcilovNilsson/the-sisyphus-stack.git"
+  },
+  "keywords": ["python", "react", "playwright", "fastapi", "monorepo", "automation"],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/OliverGurcilovNilsson/the-sisyphus-stack/issues"
+  },
+  "homepage": "https://github.com/OliverGurcilovNilsson/the-sisyphus-stack#readme",
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  }
+}
