@@ -1,35 +1,72 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { useEffect, useState } from 'react';
+import axios from 'axios';
+import './App.css';
 
-function App() {
-  const [count, setCount] = useState(0)
-
-  return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+// Define a simple type for the job data
+interface Job {
+  id: string;
+  title: string;
 }
 
-export default App
+function App() {
+  // State to hold the jobs fetched from the backend
+  const [jobs, setJobs] = useState<Job[]>([]);
+  // State for loading and error handling
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  // URL of the backend FastAPI endpoint
+  const API_URL = 'http://127.0.0.1:8000/api/jobs';
+
+  useEffect(() => {
+    const fetchJobs = async () => {
+      try {
+        setLoading(true);
+        // Make a GET request to your FastAPI backend
+        const response = await axios.get(API_URL);
+
+        // Check the status from your backend's response structure
+        if (response.data.status === 'success') {
+          setJobs(response.data.data);
+          setError(null);
+        } else {
+          setError(response.data.message || 'Unknown error from backend.');
+        }
+
+      } catch (err) {
+        console.error("Error fetching data:", err);
+        setError('Failed to connect to the backend API. Make sure the Python server is running.');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchJobs();
+  }, []); // Empty dependency array means this runs only once on component mount
+
+  return (
+    <div className="App">
+      <h1>The Sisyphus Stack: Latest Job Listings 🏛️</h1>
+      <p>Fetching data from the JobTech API via your FastAPI backend...</p>
+
+      {loading && <p>Loading latest jobs...</p>}
+
+      {error && <p style={{ color: 'red' }}>Error: {error}</p>}
+
+      {!loading && !error && (
+        <>
+          <h2>10 Latest Jobs:</h2>
+          <ul>
+            {jobs.map((job) => (
+              <li key={job.id}>
+                {job.title}
+              </li>
+            ))}
+          </ul>
+        </>
+      )}
+    </div>
+  );
+}
+
+export default App;
